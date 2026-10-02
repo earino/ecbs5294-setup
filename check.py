@@ -130,7 +130,19 @@ if platform.system() == "Windows":
 else:
     line("shell", shell or "unknown", True)
 
-# 8. A Git clone, not a ZIP download (information only: the commit in step 4 needs it)
+# 8. The notebook on disk: have its outputs been saved? (information: README step 3 ends with a save, and only a
+#    saved file carries the three outputs into the commit and the zip. Before step 3 this line says no; after it, yes.)
+import json
+try:
+    nb = json.loads(Path("check_notebook.ipynb").read_text(encoding="utf-8"))
+    counts = [len(c.get("outputs", [])) for c in nb["cells"] if c.get("cell_type") == "code"]
+    saved = bool(counts) and all(n > 0 for n in counts)
+    note("notebook has saved outputs", "yes" if saved else
+         f"no ({counts.count(0)} of {len(counts)} code cells have none) -- README step 3: Run All, then SAVE, then run this check again")
+except Exception as e:  # noqa: BLE001
+    note("notebook has saved outputs", f"could not read check_notebook.ipynb: {e}")
+
+# 9. A Git clone, not a ZIP download (information only: the commit in step 4 needs it)
 project = Path(__file__).resolve().parent
 code, top = first_line(["git", "-C", str(project), "rev-parse", "--show-toplevel"])
 if code == 0 and top and Path(top).resolve() == project:
@@ -145,4 +157,5 @@ if problems:
         print(f"  - {p}")
     sys.exit(1)
 print("ALL CHECKS PASSED")
-print("\nNext: the notebook (README step 3), then the commit, the archive, and Moodle (steps 4 to 6).")
+print("\nNext: the notebook (README step 3): Run All, save, and run this check again until the line")
+print("`notebook has saved outputs` says yes. Then the commit, the archive, and Moodle (steps 4 to 6).")

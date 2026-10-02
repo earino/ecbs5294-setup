@@ -58,7 +58,10 @@ A script that runs in the terminal does not prove that VS Code can run a cell. S
 3. Click **Select Kernel** (top right) → *Python Environments…* → the entry marked **Recommended** whose path contains
    **`.venv`**.
 4. **Run All.** Three outputs appear: a path containing `.venv`, `duckdb 1.5.5`, and a table with **525461** in it.
-5. **Save** the notebook (Ctrl+S, or Cmd+S on a Mac). The outputs are now part of the file.
+5. **Save** the notebook (Ctrl+S, or Cmd+S on a Mac). Outputs you see on screen are in the file only after a save.
+6. **Prove it.** Back in the terminal, run `uv run python check.py` again: the line `notebook has saved outputs` must
+   now say **yes**. If it says *no*, the file has no outputs: go back to step 4, Run All, and save. Then save the
+   output again, `uv run python check.py > check_output.txt`, so the file you hand in shows the yes.
 
 ## 4. Commit (terminal)
 
@@ -67,7 +70,8 @@ git status
 ```
 
 It lists `check_notebook.ipynb` as *modified* (it has outputs now) and `check_output.txt` as *untracked* (Git has
-never seen it). Commit both:
+never seen it). **If `check_notebook.ipynb` is not listed as modified, the outputs were not saved: back to step 3.**
+Commit both:
 
 ```bash
 git add check_output.txt check_notebook.ipynb
@@ -92,7 +96,8 @@ submitted this way. Look inside:
 uv run python -c "import zipfile; print(*zipfile.ZipFile('../setup-submission.zip').namelist(), sep='\n')"
 ```
 
-The list must include `check_output.txt` and `check_notebook.ipynb`. It must not include `.venv/`.
+The list must include `check_output.txt` and `check_notebook.ipynb`. It must not include `.venv/`. The zip is about
+3 MB: most of it is the data file, which is committed on purpose.
 
 ## 6. Submit (Moodle)
 
@@ -103,7 +108,7 @@ In the Moodle **Setup verification** slot:
   **roughly how long setup took you**, from the first install to this upload.
 
 **If you did not take DS1, or a check failed, or setup took you more than an hour:** book a supported 30-minute
-rehearsal with a TA in the week of 28 September, on Moodle. You run this path once more with someone beside you, so
+rehearsal with a TA in the week before Session 1, on Moodle. You run this path once more with someone beside you, so
 that Session 1's lab is about the data, not the tools. It is there to help, not to test you.
 
 That is the whole path. Lab 1 starts the same way: clone, `uv sync`, open the folder, pick the `.venv` kernel.
@@ -121,8 +126,9 @@ That is the whole path. Lab 1 starts the same way: clone, `uv sync`, open the fo
 | `git user.name`, `git user.email` | Git can record who made a commit | Run the `git config --global …` line the check prints |
 | `shell is Git Bash`, `core.autocrlf = input` (Windows) | the course's one shell and line-ending setting | Open Git Bash; run the `git config` line the check prints |
 
-The last line, `this folder is a Git clone`, is information, not a check. If it says *no*, you downloaded a ZIP from
-GitHub instead of cloning, and step 4 will fail. Clone it (step 1).
+The two `[--]` lines are information, not checks. `notebook has saved outputs` says *no* until you have done step 3
+and saved; after that it must say *yes*, and that is the proof the notebook step worked. `this folder is a Git clone`
+says *no* if you downloaded a ZIP from GitHub instead of cloning, and then step 4 will fail: clone it (step 1).
 
 ## Windows notes
 
