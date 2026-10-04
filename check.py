@@ -18,7 +18,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-# A path with any letter in it (a user folder called Szoke with an accent, say) must print on any Windows code page.
+# A path with any letter in it (a user folder with an accented letter in its name, say) must print on any Windows code page.
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(errors="backslashreplace")
 
